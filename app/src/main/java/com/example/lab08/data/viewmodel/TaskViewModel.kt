@@ -1,4 +1,4 @@
-package com.example.lab08.viewmodel
+package com.example.lab08.data.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
