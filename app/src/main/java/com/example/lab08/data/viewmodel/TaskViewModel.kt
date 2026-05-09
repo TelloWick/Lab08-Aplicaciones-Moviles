@@ -1,60 +1,49 @@
-package com.example.lab08.data.viewmodel
+package com.example.lab08.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lab08.data.dao.TaskDao
 import com.example.lab08.data.model.Task
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class TaskViewModel(private val dao: TaskDao) : ViewModel() {
 
-    // Estado de la lista de tareas
-    private val _tasks = MutableStateFlow<List<Task>>(emptyList())
+    // Estado de la UI: Expone la lista de tareas de forma reactiva (UDF)
+    val tasks = dao.getAllTasks().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
-    val tasks: StateFlow<List<Task>> = _tasks
-
-    init {
-        // Cargar tareas al iniciar
-        viewModelScope.launch {
-            _tasks.value = dao.getAllTasks()
-        }
-    }
-
-    // Agregar tarea
+    // Función para añadir una tarea
     fun addTask(description: String) {
-
-        val newTask = Task(description = description)
-
-        viewModelScope.launch {
-            dao.insertTask(newTask)
-            _tasks.value = dao.getAllTasks()
+        if (description.isNotBlank()) {
+            viewModelScope.launch {
+                dao.insertTask(Task(description = description))
+            }
         }
     }
 
-    // Cambiar estado de completado
+    // Función para marcar como completada/pendiente (Punto adicional 1 - Editar)
     fun toggleTaskCompletion(task: Task) {
-
         viewModelScope.launch {
-
-            val updatedTask =
-                task.copy(isCompleted = !task.isCompleted)
-
-            dao.updateTask(updatedTask)
-
-            _tasks.value = dao.getAllTasks()
+            dao.updateTask(task.copy(isCompleted = !task.isCompleted))
         }
     }
 
-    // Eliminar tareas
-    fun deleteAllTasks() {
-
+    // Función para eliminar una tarea (Punto adicional 2)
+    fun deleteTask(task: Task) {
         viewModelScope.launch {
+            dao.deleteTask(task)
+        }
+    }
 
+    // Función para eliminar todo
+    fun deleteAllTasks() {
+        viewModelScope.launch {
             dao.deleteAllTasks()
-
-            _tasks.value = emptyList()
         }
     }
 }

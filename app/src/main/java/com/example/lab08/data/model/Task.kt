@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "tasks")
 data class Task(
-
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
@@ -14,5 +13,8 @@ data class Task(
     val description: String,
 
     @ColumnInfo(name = "is_completed")
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
+
+    @ColumnInfo(name = "priority")
+    val priority: Int = 1 // 1: Baja, 2: Media, 3: Alta (Punto adicional 7)
 )
