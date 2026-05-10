@@ -21,7 +21,9 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             TaskDatabase::class.java,
             "task_database"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
 
         val dao = database.taskDao()
 

@@ -12,35 +12,54 @@ class TaskViewModel(
     private val dao: TaskDao
 ) : ViewModel() {
 
+    // LISTA DE TAREAS
     private val _tasks =
         MutableStateFlow<List<Task>>(emptyList())
 
     val tasks: StateFlow<List<Task>> = _tasks
 
+    // FILTROS
+    private val _filter =
+        MutableStateFlow("Todas")
+
+    val filter: StateFlow<String> = _filter
+
     init {
         loadTasks()
     }
 
+    // CARGAR TAREAS
     fun loadTasks() {
+
         viewModelScope.launch {
-            _tasks.value = dao.getAllTasks()
+
+            _tasks.value =
+                dao.getAllTasks()
         }
     }
 
-    fun addTask(description: String) {
+    // AGREGAR TAREA
+    fun addTask(
+        description: String,
+        priority: String
+    ) {
 
         if (description.isBlank()) return
 
         viewModelScope.launch {
 
             dao.insertTask(
-                Task(description = description)
+                Task(
+                    description = description,
+                    priority = priority
+                )
             )
 
             loadTasks()
         }
     }
 
+    // COMPLETAR TAREA
     fun toggleTaskCompletion(task: Task) {
 
         viewModelScope.launch {
@@ -55,6 +74,29 @@ class TaskViewModel(
         }
     }
 
+    // EDITAR TAREA
+    fun editTask(
+        task: Task,
+        newDescription: String,
+        newPriority: String
+    ) {
+
+        if (newDescription.isBlank()) return
+
+        viewModelScope.launch {
+
+            dao.updateTask(
+                task.copy(
+                    description = newDescription,
+                    priority = newPriority
+                )
+            )
+
+            loadTasks()
+        }
+    }
+
+    // ELIMINAR TAREA
     fun deleteTask(task: Task) {
 
         viewModelScope.launch {
@@ -65,6 +107,7 @@ class TaskViewModel(
         }
     }
 
+    // ELIMINAR TODAS
     fun deleteAllTasks() {
 
         viewModelScope.launch {
@@ -73,5 +116,13 @@ class TaskViewModel(
 
             loadTasks()
         }
+    }
+
+    // CAMBIAR FILTRO
+    fun changeFilter(
+        newFilter: String
+    ) {
+
+        _filter.value = newFilter
     }
 }
