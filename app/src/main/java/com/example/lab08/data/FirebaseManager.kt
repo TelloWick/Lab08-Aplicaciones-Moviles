@@ -12,15 +12,23 @@ class FirebaseManager {
 
     fun saveTask(task: Task) {
 
-        tasksCollection
-            .document(task.id.toString())
-            .set(task)
+        // GENERAR ID AUTOMÁTICO EN FIREBASE
+        tasksCollection.add(task)
     }
 
     fun deleteTask(task: Task) {
 
         tasksCollection
-            .document(task.id.toString())
-            .delete()
+            .whereEqualTo("description", task.description)
+            .get()
+            .addOnSuccessListener { result ->
+
+                for (document in result) {
+
+                    tasksCollection
+                        .document(document.id)
+                        .delete()
+                }
+            }
     }
 }
