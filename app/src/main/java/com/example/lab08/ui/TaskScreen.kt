@@ -30,7 +30,7 @@ fun TaskScreen(viewModel: TaskViewModel) {
 
     val filteredTasks = when (filter) {
         "Pendientes" -> tasks.filter { !it.isCompleted }
-        "Completadas" -> tasks.filter { it.isCompleted }
+        "Done" -> tasks.filter { it.isCompleted }
         else -> tasks
     }
 
@@ -125,8 +125,8 @@ fun TaskScreen(viewModel: TaskViewModel) {
                     viewModel.changeFilter("Pendientes")
                 }
 
-                FilterButton("Completadas", filter) {
-                    viewModel.changeFilter("Completadas")
+                FilterButton("Done", filter) {
+                    viewModel.changeFilter("Done")
                 }
             }
 
