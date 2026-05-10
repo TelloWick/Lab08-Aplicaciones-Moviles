@@ -2,6 +2,7 @@ package com.example.lab08.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.lab08.data.FirebaseManager
 import com.example.lab08.data.Task
 import com.example.lab08.data.TaskDao
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +12,10 @@ import kotlinx.coroutines.launch
 class TaskViewModel(
     private val dao: TaskDao
 ) : ViewModel() {
+
+    // FIREBASE
+    private val firebaseManager =
+        FirebaseManager()
 
     // LISTA DE TAREAS
     private val _tasks =
@@ -48,12 +53,15 @@ class TaskViewModel(
 
         viewModelScope.launch {
 
-            dao.insertTask(
-                Task(
-                    description = description,
-                    priority = priority
-                )
+            val task = Task(
+                description = description,
+                priority = priority
             )
+
+            dao.insertTask(task)
+
+            // GUARDAR EN FIREBASE
+            firebaseManager.saveTask(task)
 
             loadTasks()
         }
@@ -85,12 +93,15 @@ class TaskViewModel(
 
         viewModelScope.launch {
 
-            dao.updateTask(
-                task.copy(
-                    description = newDescription,
-                    priority = newPriority
-                )
+            val updatedTask = task.copy(
+                description = newDescription,
+                priority = newPriority
             )
+
+            dao.updateTask(updatedTask)
+
+            // ACTUALIZAR EN FIREBASE
+            firebaseManager.saveTask(updatedTask)
 
             loadTasks()
         }
@@ -102,6 +113,9 @@ class TaskViewModel(
         viewModelScope.launch {
 
             dao.deleteTask(task)
+
+            // ELIMINAR EN FIREBASE
+            firebaseManager.deleteTask(task)
 
             loadTasks()
         }

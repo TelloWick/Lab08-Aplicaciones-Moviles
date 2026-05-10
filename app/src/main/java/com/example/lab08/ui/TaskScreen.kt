@@ -63,7 +63,9 @@ fun TaskScreen(viewModel: TaskViewModel) {
                 value = newTask,
                 onValueChange = { newTask = it },
                 label = { Text("Nueva tarea") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
                 shape = RoundedCornerShape(16.dp)
             )
 

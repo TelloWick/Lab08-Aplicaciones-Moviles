@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.devtools.ksp")
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -47,6 +48,7 @@ dependencies {
 
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
+    implementation(libs.firebase.firestore)
 
     // ROOM
     val roomVersion = "2.6.1"
